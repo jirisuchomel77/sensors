@@ -1,0 +1,41 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sensors
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sensors
+  namespace: sensors
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sensors
+  namespace: sensors
+  labels:
+    app: sensors
+spec:
+  selector:
+    matchLabels:
+      app: sensors
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: sensors
+    spec:
+      serviceAccountName: sensors
+      containers:
+      - name: sensors
+        image: jsuchome/sensors:02
+        imagePullPolicy: Always
+        env:
+          - name: REDIS_HOST
+            value: "redis"
+          - name: REDIS_PORT
+            value: "6379"
+          - name: REMOTE_LOGS_DIR
+            value: "http://apache/files/"
